@@ -1,0 +1,20 @@
+{
+  "name": "fdpn",
+  "authors": [
+    "Filippo De Santis <filippo.desantis@gmail.com>"
+  ],
+  "description": "",
+  "main": "directive.js",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.5.8"
+  }
+}
