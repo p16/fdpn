@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('fdpn.nmPhoneNumber').directive('nmPhoneNumber', function () {
+angular.module('fdpn.nmPhoneNumber', []).directive('nmPhoneNumber', function () {
   return {
     scope: {
       phoneNumber: '=phoneNumber',
