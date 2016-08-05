@@ -53,15 +53,6 @@ angular
         return attr.templateUrl;
       }
     };
-  })
-  .filter('fnpnTraslate', function(translateFilter) {
-    if (translateFilter) {
-      return translateFilter;
-    }
-
-    return function(value) {
-      return value;
-    }
   });
 
 /**
