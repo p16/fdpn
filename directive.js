@@ -1,49 +1,68 @@
 'use strict';
 
-angular.module('fdpn.nmPhoneNumber', []).directive('nmPhoneNumber', function () {
-  var template;
-  return {
-    scope: {
-      phoneNumber: '=phoneNumber',
-      phoneSettings: '=phoneSettings',
-      loadingsSave: '=loadingsSave',
-      save: '&'
-    },
-    controller: function ($scope) {
-      $scope.phoneData = parsePhone($scope.phoneNumber, $scope.phoneSettings);
-      $scope.getProperty = function (property){
-        if($scope.phoneData.fkCountry){
-          var phoneSettings = $scope.phoneSettings[$scope.phoneData.fkCountry.toLowerCase()].phoneCodes;
-          return phoneSettings[property];
+angular
+  .module('fdpn.nmPhoneNumber', [])
+  .directive('nmPhoneNumberSingleInput', function () {
+     return {
+        require: 'ngModel',
+        link: function($scope, elem, attr, ngModel) {
+          ngModel.$parsers.unshift(function(value) {
+            var isValid = utils.isValidPhoneNumber(value);
+            ngModel.$setValidity('nmPhoneNumberSingleInput', isValid);
+            return isValid ? isValid : undefined;
+          });
+
+          ngModel.$formatters.unshift(function(value) {
+            ngModel.$setValidity('nmPhoneNumberSingleInput', utils.isValidPhoneNumber(value));
+            return value;
+          });
         }
-      };
+     }
+  })
+  .directive('nmPhoneNumber', function () {
+    return {
+      scope: {
+        phoneNumber: '=phoneNumber',
+        phoneSettings: '=phoneSettings',
+        loadingsSave: '=loadingsSave',
+        save: '&'
+      },
+      controller: function ($scope) {
+        $scope.phoneData = parsePhone($scope.phoneNumber, $scope.phoneSettings);
+        $scope.getProperty = function (property){
+          if($scope.phoneData.fkCountry){
+            var phoneSettings = $scope.phoneSettings[$scope.phoneData.fkCountry.toLowerCase()].phoneCodes;
+            return phoneSettings[property];
+          }
+        };
 
-      $scope.changeCarrierCode = function() {
-        var cellTokens = $scope.phoneData.cellTokens;
-        var fkCountry  = $scope.phoneData.fkCountry.toLowerCase();
-        var phoneCodes = $scope.phoneSettings[fkCountry].phoneCodes;
+        $scope.changeCarrierCode = function() {
+          var cellTokens = $scope.phoneData.cellTokens;
+          var fkCountry  = $scope.phoneData.fkCountry.toLowerCase();
+          var phoneCodes = $scope.phoneSettings[fkCountry].phoneCodes;
 
-        cellTokens.countryCode = phoneCodes.country;
-        cellTokens.carrierCode = phoneCodes.carrierCodes[0] ? phoneCodes.carrierCodes[0].toString() : null;
-      };
+          cellTokens.countryCode = phoneCodes.country;
+          cellTokens.carrierCode = phoneCodes.carrierCodes[0] ? phoneCodes.carrierCodes[0].toString() : null;
+        };
 
-      $scope.savePhone = function (phoneData) {
-        $scope.save()(phoneData);
-      };
-    },
-    templateUrl: function(elem, attr){
-      return attr.templateUrl;
+        $scope.savePhone = function (phoneData) {
+          $scope.save()(phoneData);
+        };
+      },
+      templateUrl: function(elem, attr){
+        return attr.templateUrl;
+      }
+    };
+  })
+  .filter('fnpnTraslate', function(translateFilter) {
+    if (translateFilter) {
+      return translateFilter;
     }
-  };
-}).filter('fnpnTraslate', function(translateFilter) {
-  if (translateFilter) {
-    return translateFilter;
-  }
 
-  return function(value) {
-    return value;
-  }
-});
+    return function(value) {
+      return value;
+    }
+  });
 
 /**
  * phone format: +<country_code>-<carrier>-<number>
