@@ -7,13 +7,13 @@ angular
         require: 'ngModel',
         link: function($scope, elem, attr, ngModel) {
           ngModel.$parsers.unshift(function(value) {
-            var isValid = utils.isValidPhoneNumber(value);
+            var isValid = fdpnUtils.isValidPhoneNumber(value);
             ngModel.$setValidity('nmPhoneNumberSingleInput', isValid);
             return isValid ? isValid : undefined;
           });
 
           ngModel.$formatters.unshift(function(value) {
-            ngModel.$setValidity('nmPhoneNumberSingleInput', utils.isValidPhoneNumber(value));
+            ngModel.$setValidity('nmPhoneNumberSingleInput', fdpnUtils.isValidPhoneNumber(value));
             return value;
           });
         }
@@ -28,63 +28,87 @@ angular
         save: '&'
       },
       controller: function ($scope) {
-        $scope.phoneData = parsePhone($scope.phoneNumber, $scope.phoneSettings);
-        $scope.getProperty = function (property){
+        $scope.phoneData = fdpnUtils.parsePhone($scope.phoneNumber, $scope.phoneSettings);
+        $scope.phoneValidation = {
+          countryCode: {},
+          carrierCode: {},
+          number: {}
+        };
+
+        function getProperty(property) {
           if($scope.phoneData.fkCountry){
             var phoneSettings = $scope.phoneSettings[$scope.phoneData.fkCountry.toLowerCase()].phoneCodes;
             return phoneSettings[property];
           }
         };
 
+        $scope.getProperty = getProperty;
+
         $scope.changeCarrierCode = function() {
+          $scope.validateCountryCode();
+
+          if (!$scope.isPhoneValid()) {
+            return;
+          }
+
           var cellTokens = $scope.phoneData.cellTokens;
           var fkCountry  = $scope.phoneData.fkCountry.toLowerCase();
           var phoneCodes = $scope.phoneSettings[fkCountry].phoneCodes;
 
           cellTokens.countryCode = phoneCodes.country;
           cellTokens.carrierCode = phoneCodes.carrierCodes[0] ? phoneCodes.carrierCodes[0].toString() : null;
+
+          $scope.validateCarrierCode();
+          $scope.validateNumber({trimNumber: false});
         };
 
         $scope.savePhone = function (phoneData) {
           $scope.save()(phoneData);
         };
+
+        $scope.validateCountryCode = function() {
+          $scope.phoneValidation.countryCode = fdpnUtils.validateCountryCode(
+            $scope.phoneData.fkCountry,
+            $scope.phoneSettings
+          );
+        }
+
+        $scope.validateCarrierCode = function() {
+          $scope.phoneValidation.carrierCode = fdpnUtils.validateCarrierCode(
+            $scope.phoneData.cellTokens.carrierCode,
+            $scope.phoneData.fkCountry,
+            $scope.phoneSettings
+          );
+        }
+
+        $scope.validateNumber = function(options) {
+          $scope.phoneData.cellTokens.number = fdpnUtils.extractNumbers($scope.phoneData.cellTokens.number);
+
+          /* when changing country code we should not touch the number, but only run the validation*/
+          if (options && options.trimNumber !== false) {
+            $scope.phoneData.cellTokens.number = fdpnUtils.shortenToLengh(
+              $scope.phoneData.cellTokens.number,
+              getProperty('maxlength')
+            );
+          }
+
+          $scope.phoneValidation.number = fdpnUtils.validateNumber(
+            $scope.phoneData.cellTokens.number,
+            getProperty('minlength'),
+            getProperty('maxlength')
+          );
+        }
+
+        $scope.isPhoneValid = function() {
+          return (
+            ($scope.phoneValidation.countryCode.invalid === undefined || $scope.phoneValidation.countryCode.invalid === false) &&
+            ($scope.phoneValidation.carrierCode.invalid === undefined || $scope.phoneValidation.carrierCode.invalid === false) &&
+            ($scope.phoneValidation.number.invalid === undefined || $scope.phoneValidation.number.invalid === false)
+          );
+        }
       },
       templateUrl: function(elem, attr){
         return attr.templateUrl;
       }
     };
   });
-
-/**
- * phone format: +<country_code>-<carrier>-<number>
- */
-function parsePhone(phone, phoneSettings) {
-  var regexpPhone = /^\+([0-9]{2,3})(\-([0-9]{1,2}))?\-([0-9]{6,8})$/;
-  if (!phone || !regexpPhone.test(phone)) {
-    return {
-      fkCountry: '',
-      cellTokens: {
-        countryCode: '',
-        carrierCode: '',
-        number: ''
-      }
-    };
-  }
-
-  var mathes = phone.match(regexpPhone);
-  var countryCode = mathes[1];
-  var carrierCode = mathes[3] || '';
-  var number = mathes[4];
-  var phoneCountryConfig = _.find(phoneSettings, function(setting) {
-    return setting.phoneCodes.country == countryCode;
-  });
-
-  return {
-    fkCountry: phoneCountryConfig.iso2Code,
-    cellTokens: {
-      countryCode: countryCode,
-      carrierCode: carrierCode,
-      number: number
-    }
-  };
-}
