@@ -86,7 +86,9 @@ angular
           );
         }
 
-        $scope.validateNumber = function(options = {}) {
+        $scope.validateNumber = function(options) {
+          options = options || {};
+
           $scope.phoneData.cellTokens.number = fdpnUtils.extractNumbers($scope.phoneData.cellTokens.number);
 
           /* when changing country code we should not touch the number, but only run the validation*/
