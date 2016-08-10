@@ -53,16 +53,6 @@ describe('fdpnUtils', function() {
         "fkCountry": "SA"
       });
 
-      /* TODO */
-      // expect(utils.parsePhone('+96600000000', phoneSettings)).to.deep.equal({
-      //   "cellTokens": {
-      //     "carrierCode": "00",
-      //     "countryCode": "966",
-      //     "number": "000000"
-      //   },
-      //   "fkCountry": "SA"
-      // });
-
       expect(utils.parsePhone('+973-000000', phoneSettings)).to.deep.equal({
         "cellTokens": {
           "carrierCode": "",

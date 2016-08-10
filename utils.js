@@ -4,27 +4,8 @@
  * Uses abstract comparison (==) NOT strict comparison (===)
  */
 function contains(list, item) {
-  for(var i = 0; i < list.length; i++) {
-    if (list[i] == item) {
-      return true;
-    }
-  }
-
-  return false;
+  return _(list).map(_.toString).includes(_.toString(item));
 };
-
-function getphoneCountryConfig(phoneSettings, countryCode) {
-  var found;
-  var keys = Object.keys(phoneSettings);
-
-  keys.forEach(function(key) {
-    if (!found && phoneSettings[key].phoneCodes.country == countryCode) {
-      found = phoneSettings[key];
-    }
-  });
-
-  return found;
-}
 
 var emptyPhoneObject = {
   fkCountry: '',
@@ -57,7 +38,9 @@ var fdpnUtils = {
 
     var matches = phone.match(phoneRegex);
     var countryCode = matches[1];
-    var phoneCountryConfig = getphoneCountryConfig(phoneSettings, countryCode);
+    var phoneCountryConfig = _.find(phoneSettings, function(setting) {
+      return setting.phoneCodes.country == countryCode;
+    });
 
     if (!phoneCountryConfig) {
       return emptyPhoneObject;
@@ -170,5 +153,7 @@ var fdpnUtils = {
 }
 
 if (typeof require === 'function') {
+  var _ = require('lodash');
   module.exports = fdpnUtils;
 }
+
