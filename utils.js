@@ -49,11 +49,22 @@ var fdpnUtils = {
       };
     }
 
-    var mathes = phone.match(regexpPhone);
-    var countryCode = mathes[1];
-    var carrierCode = mathes[3] || '';
-    var number = mathes[4];
+    var matches = phone.match(regexpPhone);
+    var countryCode = matches[1];
     var phoneCountryConfig = getphoneCountryConfig(phoneSettings, countryCode);
+    if (!phoneCountryConfig) {
+      return {
+        fkCountry: '',
+        cellTokens: {
+          countryCode: '',
+          carrierCode: '',
+          number: ''
+        }
+      };
+    }
+
+    var carrierCode = matches[3] || '';
+    var number = matches[4];
 
     return {
       fkCountry: phoneCountryConfig.iso2Code,

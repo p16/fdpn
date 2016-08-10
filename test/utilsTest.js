@@ -95,6 +95,15 @@ describe('fdpnUtils', function() {
         "fkCountry": ""
       });
 
+      expect(utils.parsePhone('+999-00-000000', phoneSettings)).to.deep.equal({
+        "cellTokens": {
+          "carrierCode": "",
+          "countryCode": "",
+          "number": ""
+        },
+        "fkCountry": ""
+      });
+
       done();
     });
   });
