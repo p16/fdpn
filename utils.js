@@ -1,5 +1,7 @@
 'use strict';
 
+var _ = _ || (typeof require === 'function' && require('lodash'));
+
 /**
  * Uses abstract comparison (==) NOT strict comparison (===)
  */
@@ -153,7 +155,6 @@ var fdpnUtils = {
 }
 
 if (typeof require === 'function') {
-  var _ = require('lodash');
   module.exports = fdpnUtils;
 }
 
