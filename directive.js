@@ -28,13 +28,6 @@ angular
         save: '&'
       },
       controller: function ($scope) {
-        $scope.phoneData = fdpnUtils.parsePhone($scope.phoneNumber, $scope.phoneSettings);
-        $scope.phoneValidation = {
-          countryCode: {},
-          carrierCode: {},
-          number: {}
-        };
-
         function getProperty(property) {
           if($scope.phoneData.fkCountry){
             var phoneSettings = $scope.phoneSettings[$scope.phoneData.fkCountry.toLowerCase()].phoneCodes;
@@ -42,9 +35,20 @@ angular
           }
         };
 
+        function resetValidation() {
+          $scope.phoneValidation = {
+            countryCode: {},
+            carrierCode: {},
+            number: {}
+          };
+        }
+
+        resetValidation();
+        $scope.phoneData = fdpnUtils.parsePhone($scope.phoneNumber, $scope.phoneSettings);
         $scope.getProperty = getProperty;
 
         $scope.changeCarrierCode = function() {
+          resetValidation();
           $scope.validateCountry();
 
           if (!$scope.isPhoneValid()) {
