@@ -25,6 +25,7 @@ angular
         phoneNumber: '=phoneNumber',
         phoneSettings: '=phoneSettings',
         loadingsSave: '=loadingsSave',
+        options: '=options',
         save: '&'
       },
       controller: function ($scope) {

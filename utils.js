@@ -26,41 +26,41 @@ function getphoneCountryConfig(phoneSettings, countryCode) {
   return found;
 }
 
+var emptyPhoneObject = {
+  fkCountry: '',
+  cellTokens: {
+    countryCode: '',
+    carrierCode: '',
+    number: ''
+  }
+};
+
+/**
+ * @see https://www.debuggex.com/r/tcX_Ez3vptR8n0Ff
+ */
+var phoneRegex = /^[00|\+]+([0-9]{2,3})(\-([0-9]{1,2}))?[\-]?([0-9]{6,8})$/;
+
 var fdpnUtils = {
   contains: contains,
 
   isValidPhoneNumber: function(value) {
-    return /^(00|\+)[0-9]{2,3}[\-\s0-9]{9,13}$/.test(value);
+    return phoneRegex.test(value);
   },
 
   /**
    * phone format: +<country_code>-<carrier>-<number>
    */
   parsePhone: function(phone, phoneSettings) {
-    var regexpPhone = /^\+([0-9]{2,3})(\-([0-9]{1,2}))?\-([0-9]{6,8})$/;
-    if (!phone || !regexpPhone.test(phone)) {
-      return {
-        fkCountry: '',
-        cellTokens: {
-          countryCode: '',
-          carrierCode: '',
-          number: ''
-        }
-      };
+    if (!phone || !phoneRegex.test(phone)) {
+      return emptyPhoneObject;
     }
 
-    var matches = phone.match(regexpPhone);
+    var matches = phone.match(phoneRegex);
     var countryCode = matches[1];
     var phoneCountryConfig = getphoneCountryConfig(phoneSettings, countryCode);
+
     if (!phoneCountryConfig) {
-      return {
-        fkCountry: '',
-        cellTokens: {
-          countryCode: '',
-          carrierCode: '',
-          number: ''
-        }
-      };
+      return emptyPhoneObject;
     }
 
     var carrierCode = matches[3] || '';

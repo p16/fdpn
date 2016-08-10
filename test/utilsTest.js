@@ -21,25 +21,10 @@ describe('fdpnUtils', function() {
       expect(utils.isValidPhoneNumber('+971-00-000000')).to.equal(true);
       expect(utils.isValidPhoneNumber('00971-00-000000')).to.equal(true);
       expect(utils.isValidPhoneNumber('+971-0000000')).to.equal(true);
-
-      expect(utils.isValidPhoneNumber('+971-00-000')).to.equal(false);
-      expect(utils.isValidPhoneNumber('00971-00-000')).to.equal(false);
-      expect(utils.isValidPhoneNumber('aaa')).to.equal(false);
-
-      done();
-    });
-  });
-
-  describe('isValidPhoneNumber', function() {
-    it('should tell use if a phone number is valid based on our format', function(done) {
-
-      expect(utils.isValidPhoneNumber('+971-00-000000')).to.equal(true);
-      expect(utils.isValidPhoneNumber('00971-00-000000')).to.equal(true);
-      expect(utils.isValidPhoneNumber('+971-0000000')).to.equal(true);
       expect(utils.isValidPhoneNumber('+97100000000')).to.equal(true);
+      expect(utils.isValidPhoneNumber('+9710000000')).to.equal(true);
 
       expect(utils.isValidPhoneNumber('+971-00-000')).to.equal(false);
-      expect(utils.isValidPhoneNumber('+9710000000')).to.equal(false);
       expect(utils.isValidPhoneNumber('00971-00-000')).to.equal(false);
       expect(utils.isValidPhoneNumber('aaa')).to.equal(false);
 
@@ -68,7 +53,26 @@ describe('fdpnUtils', function() {
         "fkCountry": "SA"
       });
 
+      /* TODO */
+      // expect(utils.parsePhone('+96600000000', phoneSettings)).to.deep.equal({
+      //   "cellTokens": {
+      //     "carrierCode": "00",
+      //     "countryCode": "966",
+      //     "number": "000000"
+      //   },
+      //   "fkCountry": "SA"
+      // });
+
       expect(utils.parsePhone('+973-000000', phoneSettings)).to.deep.equal({
+        "cellTokens": {
+          "carrierCode": "",
+          "countryCode": "973",
+          "number": "000000"
+        },
+        "fkCountry": "BH"
+      });
+
+      expect(utils.parsePhone('+973000000', phoneSettings)).to.deep.equal({
         "cellTokens": {
           "carrierCode": "",
           "countryCode": "973",
