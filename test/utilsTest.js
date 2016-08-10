@@ -68,6 +68,15 @@ describe('fdpnUtils', function() {
         "fkCountry": "SA"
       });
 
+      expect(utils.parsePhone('+973-000000', phoneSettings)).to.deep.equal({
+        "cellTokens": {
+          "carrierCode": "",
+          "countryCode": "973",
+          "number": "000000"
+        },
+        "fkCountry": "BH"
+      });
+
       expect(utils.parsePhone('+not-00-valid', phoneSettings)).to.deep.equal({
         "cellTokens": {
           "carrierCode": "",
@@ -111,13 +120,25 @@ describe('fdpnUtils', function() {
     it('should return true or false if the carrierCode is valid/invalid', function(done) {
 
       expect(utils.validateCarrierCode('', '', phoneSettings)).to.deep.equal({
-        empty: true,
         invalid: true
       });
 
       expect(utils.validateCarrierCode('50', '', phoneSettings)).to.deep.equal({
-        empty: false,
         invalid: true
+      });
+
+      expect(utils.validateCarrierCode('50', 'notcountry', phoneSettings)).to.deep.equal({
+        invalid: true
+      });
+
+      expect(utils.validateCarrierCode('', 'AE', phoneSettings)).to.deep.equal({
+        empty: true,
+        invalid: true
+      });
+
+      expect(utils.validateCarrierCode('', 'BH', phoneSettings)).to.deep.equal({
+        empty: true,
+        invalid: false
       });
 
       expect(utils.validateCarrierCode('52', 'SA', phoneSettings)).to.deep.equal({
@@ -190,6 +211,16 @@ var phoneSettings = {
       "carrierCodes":[50,53,54,55,56,57,58,59],
       "maxlength":7,
       "minlength":7
+    },
+  },
+  "bh": {
+    "iso2Code":"BH",
+    "name":"Bahrain",
+    "phoneCodes": {
+      "country":973,
+      "carrierCodes":false,
+      "maxlength":8,
+      "minlength":8
     },
   }
 };

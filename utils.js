@@ -77,13 +77,29 @@ var fdpnUtils = {
   },
 
   validateCarrierCode: function(carrierCode, countryId, phoneSettings) {
-    if (!carrierCode) {
-      return {empty: true, invalid: true};
+    if (!countryId) {
+      return {
+        invalid: true
+      };
     }
 
-    var phoneCodes = phoneSettings[countryId.toLowerCase()] && phoneSettings[countryId.toLowerCase()].phoneCodes;
-    if (!phoneCodes) {
+    if (!phoneSettings[countryId.toLowerCase()]) {
+      return {
+        invalid: true
+      };
+    }
+
+    var phoneCodes = phoneSettings[countryId.toLowerCase()].phoneCodes;
+
+    if (phoneCodes === undefined) {
       return {empty: false, invalid: true};
+    }
+
+    if (!carrierCode) {
+      return {
+        empty: true,
+        invalid: !(phoneCodes.carrierCodes === false)
+      };
     }
 
     return {
