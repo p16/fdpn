@@ -65,23 +65,26 @@ var fdpnUtils = {
     };
   },
 
-  validateCountryCode: function(countryCode, phoneSettings) {
-    if (!countryCode) {
+  validateCountry: function(countryId, phoneSettings) {
+    if (!countryId) {
       return {empty: true, invalid: true};
     }
 
     return {
       empty: false,
-      invalid: (!phoneSettings[countryCode.toLowerCase()] || !phoneSettings[countryCode.toLowerCase()].phoneCodes)
+      invalid: (!phoneSettings[countryId.toLowerCase()] || !phoneSettings[countryId.toLowerCase()].phoneCodes)
     };
   },
 
-  validateCarrierCode: function(carrierCode, countryCode, phoneSettings) {
+  validateCarrierCode: function(carrierCode, countryId, phoneSettings) {
     if (!carrierCode) {
       return {empty: true, invalid: true};
     }
 
-    var phoneCodes = phoneSettings[countryCode.toLowerCase()] && phoneSettings[countryCode.toLowerCase()].phoneCodes;
+    var phoneCodes = phoneSettings[countryId.toLowerCase()] && phoneSettings[countryId.toLowerCase()].phoneCodes;
+    if (!phoneCodes) {
+      return {empty: false, invalid: true};
+    }
 
     return {
       empty: false,
@@ -90,10 +93,18 @@ var fdpnUtils = {
   },
 
   validateNumber: function(number, min, max) {
-    if (!number || !/[\d]+/g.test(number)) {
+    if (!number) {
       return {
         empty: true,
         invalid: true,
+      };
+    }
+
+    if (!/[\d]+/g.test(number)) {
+      return {
+        empty: false,
+        invalid: true,
+        notNumeric: true
       };
     }
 
@@ -117,7 +128,8 @@ var fdpnUtils = {
       empty: false,
       invalid: false,
       maxlengthInvalid: false,
-      minlengthInvalid: false
+      minlengthInvalid: false,
+      notNumeric: false
     };
   },
 

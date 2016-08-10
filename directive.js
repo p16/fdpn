@@ -45,7 +45,7 @@ angular
         $scope.getProperty = getProperty;
 
         $scope.changeCarrierCode = function() {
-          $scope.validateCountryCode();
+          $scope.validateCountry();
 
           if (!$scope.isPhoneValid()) {
             return;
@@ -66,8 +66,8 @@ angular
           $scope.save()(phoneData);
         };
 
-        $scope.validateCountryCode = function() {
-          $scope.phoneValidation.countryCode = fdpnUtils.validateCountryCode(
+        $scope.validateCountry = function() {
+          $scope.phoneValidation.countryCode = fdpnUtils.validateCountry(
             $scope.phoneData.fkCountry,
             $scope.phoneSettings
           );

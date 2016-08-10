@@ -90,12 +90,82 @@ describe('fdpnUtils', function() {
     });
   });
 
-  describe('validateCountryCode', function() {
-    it('should return true or false if the countryCode is valid', function(done) {
+  describe('validateCountry', function() {
+    it('should return true or false if the countryId is valid/invalid', function(done) {
 
-      expect(utils.validateCountryCode('', phoneSettings)).to.equal({
+      expect(utils.validateCountry('', phoneSettings)).to.deep.equal({
         empty: true,
-        invaid: true
+        invalid: true
+      });
+
+      expect(utils.validateCountry('AE', phoneSettings)).to.deep.equal({
+        empty: false,
+        invalid: false
+      });
+
+      done();
+    });
+  });
+
+  describe('validateCarrierCode', function() {
+    it('should return true or false if the carrierCode is valid/invalid', function(done) {
+
+      expect(utils.validateCarrierCode('', '', phoneSettings)).to.deep.equal({
+        empty: true,
+        invalid: true
+      });
+
+      expect(utils.validateCarrierCode('50', '', phoneSettings)).to.deep.equal({
+        empty: false,
+        invalid: true
+      });
+
+      expect(utils.validateCarrierCode('52', 'SA', phoneSettings)).to.deep.equal({
+        empty: false,
+        invalid: true
+      });
+
+      expect(utils.validateCarrierCode('52', 'AE', phoneSettings)).to.deep.equal({
+        empty: false,
+        invalid: false
+      });
+
+      done();
+    });
+  });
+
+  describe('validateNumber', function() {
+    it('should return true or false if the number is valid/invalid', function(done) {
+
+      expect(utils.validateNumber()).to.deep.equal({
+        empty: true,
+        invalid: true
+      });
+
+      expect(utils.validateNumber('abc')).to.deep.equal({
+        empty: false,
+        invalid: true,
+        notNumeric: true
+      });
+
+      expect(utils.validateNumber('01', 3)).to.deep.equal({
+        empty: false,
+        invalid: true,
+        minlengthInvalid: true
+      });
+
+      expect(utils.validateNumber('01234', 3, 4)).to.deep.equal({
+        empty: false,
+        invalid: true,
+        maxlengthInvalid: true
+      });
+
+      expect(utils.validateNumber('5196853', 7, 7)).to.deep.equal({
+        empty: false,
+        invalid: false,
+        maxlengthInvalid: false,
+        minlengthInvalid: false,
+        notNumeric: false
       });
 
       done();
