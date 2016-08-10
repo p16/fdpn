@@ -81,11 +81,11 @@ angular
           );
         }
 
-        $scope.validateNumber = function(options) {
+        $scope.validateNumber = function(options = {}) {
           $scope.phoneData.cellTokens.number = fdpnUtils.extractNumbers($scope.phoneData.cellTokens.number);
 
           /* when changing country code we should not touch the number, but only run the validation*/
-          if (options && options.trimNumber !== false) {
+          if (options.trimNumber !== false) {
             $scope.phoneData.cellTokens.number = fdpnUtils.shortenToLengh(
               $scope.phoneData.cellTokens.number,
               getProperty('maxlength')
